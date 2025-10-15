@@ -23,7 +23,6 @@ body {
     display: grid;
     grid-template-columns: repeat(3, 1fr); 
     gap: 15px; 
-    height: auto;
     width: 95vw; 
     max-width: 1200px;
 }
@@ -33,7 +32,7 @@ body {
 /* ----------------------------------- */
 #controls {
     display: flex;
-    flex-direction: column; /* Stack panels vertically */
+    flex-direction: column; 
     gap: 10px;
     width: 95vw;
     max-width: 1200px;
@@ -55,15 +54,15 @@ body {
     display: flex;
     align-items: center;
     gap: 15px; 
+    border-bottom: 1px solid #eee;
+    padding-bottom: 5px;
 }
 
-/* NEW: Search Panel Styling */
 #search-panel {
     display: flex;
     align-items: center;
     gap: 10px;
     padding-top: 5px;
-    border-top: 1px solid #eee;
 }
 
 #search-input {
@@ -73,9 +72,8 @@ body {
     border-radius: 5px;
 }
 
-.btn-search {
-    background-color: #3498db; 
-    color: white;
+/* Base button styles for utility buttons */
+.btn {
     padding: 8px 12px;
     border: none;
     border-radius: 5px;
@@ -84,29 +82,37 @@ body {
     transition: background-color 0.2s;
 }
 
-.btn-search:hover {
-    background-color: #2980b9;
-}
-
-
-/* ... (Other control/stat styles remain the same) ... */
 .stat strong { font-weight: 900; }
 .stat-done { color: #2ecc71; }
 .stat-redo { color: #E67B7B; }
 #filter-panel label { font-weight: 600; }
 #view-filter { padding: 6px 10px; border-radius: 5px; border: 1px solid #ccc; font-size: 0.9em; cursor: pointer; }
+
+/* Shuffle Button Style */
+.btn-shuffle {
+    background-color: #f39c12; /* Orange color */
+    color: white;
+}
+.btn-shuffle:hover {
+    background-color: #e67e22;
+}
+
+/* Reset Button Style */
 .btn-reset {
     background-color: #34495e; 
     color: white;
-    padding: 8px 12px;
-    border: none;
-    border-radius: 5px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.2s;
 }
 .btn-reset:hover {
     background-color: #2c3e50;
+}
+
+/* Search Button Style */
+.btn-search {
+    background-color: #3498db; 
+    color: white;
+}
+.btn-search:hover {
+    background-color: #2980b9;
 }
 
 
@@ -146,9 +152,8 @@ body {
 
 
 /* ----------------------------------- */
-/* 3. FRONT CARD LAYOUT (Positioning)  */
+/* 3. FRONT CARD LAYOUT                */
 /* ----------------------------------- */
-/* (Unchanged from previous final version) */
 
 .flashcard .front {
     background-color: #ffffff;
@@ -189,7 +194,7 @@ body {
 
 
 /* ----------------------------------- */
-/* 4. BACK CARD LAYOUT (Centering & Hints) */
+/* 4. BACK CARD LAYOUT (Hints Fixed)   */
 /* ----------------------------------- */
 
 .flashcard .back {
@@ -202,7 +207,6 @@ body {
     align-items: center; 
 }
 
-/* Container for the centered Kanji/Meaning */
 .flashcard .back .back-content-area {
     width: 100%;
     flex-grow: 1; 
@@ -234,7 +238,7 @@ body {
     margin-top: 5px; 
 }
 
-/* Notes Styling (Hint Visibility Fix) */
+/* Notes Styling */
 .flashcard .back .notes {
     width: 100%;
     font-size: 0.9em; 
@@ -245,36 +249,30 @@ body {
     padding-top: 0;
     padding-bottom: 0;
     overflow: hidden;
-    opacity: 1;
+    opacity: 0;
     transition: max-height 0.3s ease-out, opacity 0.3s ease-out, padding 0.3s ease-out;
 }
 
 body.show-hints .flashcard .back .notes {
     max-height: 100px; 
-    color: #7f8c8d;
-    font-size: 1em; 
-    text-align: center;
     opacity: 1;
     padding-top: 5px;
     padding-bottom: 5px;
 }
 
 /* ----------------------------------- */
-/* 5. BUTTON STYLING (Final Overflow Fix)*/
+/* 5. BUTTON STYLING (Fixed Overflow)  */
 /* ----------------------------------- */
 
 .feedback-buttons {
-    /* Use 100% width, allowing buttons to fill the card's inner 15px padding */
     width: 100%; 
-    margin-top: 10px;
-    margin-bottom: 2px;
+    margin-top: 10px; 
     display: flex;
     justify-content: space-between; 
     gap: 8px; 
     padding-top: 10px; 
     border-top: 1px solid #ccc;
     box-sizing: border-box;
-    /* FIX: Add internal padding to constrain buttons from the sides */
     padding-left: 5px;
     padding-right: 5px;
 }
@@ -286,7 +284,6 @@ body.show-hints .flashcard .back .notes {
     font-weight: bold;
     cursor: pointer;
     transition: background-color 0.2s, transform 0.1s;
-    /* Allow buttons to grow equally */
     flex-grow: 1; 
     font-size: 0.9em;
     min-width: 0; 

@@ -25,6 +25,8 @@
             <input type="checkbox" id="show-hints-checkbox">
             <label for="show-hints-checkbox">Show Hints</label>
 
+            <button id="btn-shuffle" class="btn btn-shuffle">Shuffle Cards</button>
+
             <button id="btn-reset" class="btn btn-reset">Reset Stats</button>
         </div>
         
@@ -60,7 +62,8 @@
                 
                 <div class="notes">
                     <p><strong>Notes:</strong> {{ card['Notes'] }}</p>
-                </div>                 
+                </div>                
+                
                 <div class="feedback-buttons">
                     <button class="btn btn-done">Done</button>
                     <button class="btn btn-redo">Redo</button>
@@ -73,15 +76,18 @@
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const CARD_LIMIT = 6;
-        const flashcards = Array.from(document.querySelectorAll('.flashcard'));
+        let flashcards = Array.from(document.querySelectorAll('.flashcard')); // Use 'let' for reordering
         const totalCards = flashcards.length;
         const viewFilter = document.getElementById('view-filter');
         const btnReset = document.getElementById('btn-reset'); 
         const showHintsCheckbox = document.getElementById('show-hints-checkbox'); 
         
-        // NEW Search elements
+        // Search elements
         const searchInput = document.getElementById('search-input');
         const btnSearch = document.getElementById('btn-search');
+        
+        // NEW Shuffle element
+        const btnShuffle = document.getElementById('btn-shuffle');
         
         // Stat elements
         const statTotal = document.getElementById('stat-total');
@@ -89,6 +95,20 @@
         const statRedo = document.getElementById('stat-redo');
 
         const getFlashcard = (element) => element.closest('.flashcard');
+
+        // Fisher-Yates (Knuth) Shuffle Algorithm
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function updateCardDOMOrder() {
+            const container = document.querySelector('.container');
+            // Re-append the cards to the DOM in their new order
+            flashcards.forEach(card => container.appendChild(card));
+        }
 
         function updateStats() {
             const doneCount = flashcards.filter(card => card.classList.contains('done-mark')).length;
@@ -128,21 +148,20 @@
             let cardsToDisplay = [];
 
             if (filterMode === 'default') {
+                // IMPORTANT: Filter by status, then take the first 6
                 let redoCards = cardsToProcess.filter(card => card.classList.contains('redo-mark'));
                 let newCards = cardsToProcess.filter(card => 
                     !card.classList.contains('redo-mark') && !card.classList.contains('done-mark')
                 );
 
-                if (newCards.length > 0) {
-                    cardsToDisplay = newCards;
-                } else if (redoCards.length > 0) {
-                    redoCards.forEach(card => card.classList.remove('done-mark')); 
-                    cardsToDisplay = cardsToProcess.filter(card => card.classList.contains('redo-mark'));
-                } else {
-                    return; 
-                }
+                // Prioritize New cards, then Redo cards
+                let studyDeck = newCards.concat(redoCards);
                 
-                cardsToDisplay = cardsToDisplay.slice(0, CARD_LIMIT);
+                // Take only the limit for display
+                cardsToDisplay = studyDeck.slice(0, CARD_LIMIT);
+                
+                // Reset 'done' status on any 'redo' cards shown, so they cycle again
+                cardsToDisplay.forEach(card => card.classList.remove('done-mark'));
 
             } else if (filterMode === 'all') {
                 cardsToDisplay = cardsToProcess;
@@ -163,6 +182,7 @@
             viewFilter.value = 'default';
             searchInput.value = ''; // Clear search on reset
             updateStats();
+            // Do not shuffle on reset, just update the view
             updateDeckView('default');
         }
 
@@ -186,7 +206,7 @@
                 flashcard.classList.remove('done-mark'); 
                 flashcard.classList.remove('flipped'); 
                 updateStats();
-                updateDeckView(viewFilter.value, searchInput.value); // Pass current search/filter state
+                updateDeckView(viewFilter.value, searchInput.value); 
             });
         });
 
@@ -197,7 +217,7 @@
                 flashcard.classList.remove('redo-mark'); 
                 flashcard.classList.remove('flipped');
                 updateStats();
-                updateDeckView(viewFilter.value, searchInput.value); // Pass current search/filter state
+                updateDeckView(viewFilter.value, searchInput.value); 
             });
         });
 
@@ -218,26 +238,34 @@
             }
         });
         
-        // NEW: Search Button Handler
-        btnSearch.addEventListener('click', () => {
-            // Clear view filter when searching
+        // Search Button/Input Handlers
+        const handleSearch = () => {
+             // Change view to 'all' to show all matches
             viewFilter.value = 'all'; 
             updateDeckView(viewFilter.value, searchInput.value);
-        });
-
-        // Allow pressing Enter in the search box
+        };
+        btnSearch.addEventListener('click', handleSearch);
         searchInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
-                // Clear view filter when searching
-                viewFilter.value = 'all'; 
-                updateDeckView(viewFilter.value, searchInput.value);
+                handleSearch();
             }
+        });
+
+        // NEW: Shuffle Button Handler
+        btnShuffle.addEventListener('click', () => {
+            shuffleArray(flashcards);
+            updateCardDOMOrder(); // Update the HTML order
+            // Keep the current view mode, but apply it to the newly shuffled deck
+            updateDeckView(viewFilter.value, searchInput.value);
+            console.log("Cards shuffled.");
         });
 
         // --- INITIALIZATION ---
         statTotal.textContent = totalCards;
         updateStats();
-        flashcards.forEach(card => card.classList.add('hidden')); 
+        // Initial shuffle for the first view
+        shuffleArray(flashcards); 
+        updateCardDOMOrder();
         updateDeckView();
     });
 </script>
