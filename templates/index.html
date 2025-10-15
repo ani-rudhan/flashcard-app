@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Flashcards</title>
+    <link rel="stylesheet" href="static/style.css">
+</head>
+<body>
+    <div class="container">
+        {% for card in cards %}
+        <div class="flashcard">
+            <div class="front">
+                <div class="topic">
+                    <p><strong>{{ card['Topic'] }}</strong></p>
+                </div>
+                <div class="audio">
+                    <p><strong>{{ card['Audio'] }}</strong></p>
+                </div>
+                <div class="word">
+                    <p><strong>{{ card['Word'] }}</strong></p>
+                </div>
+            </div>
+            <div class="back">
+                <div class="kanji">
+                    <p><strong>{{ card['Kanji'] }}</strong></p>
+                </div>
+                <div class="meaning">
+                    <p><strong>{{ card['Meaning'] }}</strong></p>
+                </div>
+                <div class="notes">
+                    <p><strong>{{ card['Notes'] }}</strong></p>
+                </div>                
+                <div class="feedback-buttons">
+                    <button class="btn btn-done">Done</button>
+                    <button class="btn btn-redo">Redo</button>
+                </div>
+                </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Function to find the nearest ancestor with the class 'flashcard'
+        const getFlashcard = (element) => element.closest('.flashcard');
+
+        // 1. Setup Card Flip (Toggle on click, but ignore button clicks)
+        document.querySelectorAll('.flashcard').forEach(card => {
+            card.addEventListener('click', (e) => {
+                // Check if the click target is a button (or inside one)
+                if (!e.target.closest('.btn')) {
+                    card.classList.toggle('flipped');
+                }
+            });
+        });
+
+        // 2. Setup Redo Button Logic
+        document.querySelectorAll('.btn-redo').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const flashcard = getFlashcard(e.target);
+                
+                // 🅰️ Action 1: Apply Redo color
+                flashcard.classList.add('redo-mark');
+                
+                // 🅱️ Action 2: Flip the card back to the front view
+                flashcard.classList.remove('flipped');
+            });
+        });
+
+        // 3. Setup Done Button Logic
+        document.querySelectorAll('.btn-done').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const flashcard = getFlashcard(e.target);
+                
+                // 🅰️ Action 1: Remove Redo color (marks card as understood)
+                flashcard.classList.remove('redo-mark');
+                
+                // 🅱️ Action 2: Flip the card back to the front view
+                flashcard.classList.remove('flipped');
+            });
+        });
+    });
+</script>
+</body>
+</html>
