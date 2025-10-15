@@ -6,9 +6,37 @@
     <link rel="stylesheet" href="static/style.css">
 </head>
 <body>
+    
+    <div id="controls">
+        <div id="stats-panel">
+            <span class="stat">Total: <strong id="stat-total">0</strong></span>
+            <span class="stat stat-done">Done: <strong id="stat-done">0</strong></span>
+            <span class="stat stat-redo">Redo: <strong id="stat-redo">0</strong></span>
+        </div>
+
+        <div id="filter-panel">
+            <label for="view-filter">View Mode:</label>
+            <select id="view-filter">
+                <option value="default">Study Deck (New/Redo Cycle)</option>
+                <option value="all">All Cards</option>
+                <option value="done">Only Done Cards</option>
+                <option value="redo">Only Redo Cards</option>
+            </select>
+            <input type="checkbox" id="show-hints-checkbox">
+            <label for="show-hints-checkbox">Show Hints</label>
+
+            <button id="btn-reset" class="btn btn-reset">Reset Stats</button>
+        </div>
+        
+        <div id="search-panel">
+            <input type="text" id="search-input" placeholder="Search by Meaning...">
+            <button id="btn-search" class="btn btn-search">Search</button>
+        </div>
+    </div>
+
     <div class="container">
         {% for card in cards %}
-        <div class="flashcard">
+        <div class="flashcard" data-meaning="{{ card['Meaning'] | lower }}">
             <div class="front">
                 <div class="topic">
                     <p><strong>{{ card['Topic'] }}</strong></p>
@@ -21,64 +49,196 @@
                 </div>
             </div>
             <div class="back">
-                <div class="kanji">
-                    <p><strong>{{ card['Kanji'] }}</strong></p>
+                <div class="back-content-area">
+                    <div class="kanji">
+                        <p>{{ card['Kanji'] }}</p>
+                    </div>
+                    <div class="meaning">
+                        <p>{{ card['Meaning'] }}</p>
+                    </div>
                 </div>
-                <div class="meaning">
-                    <p><strong>{{ card['Meaning'] }}</strong></p>
-                </div>
+                
                 <div class="notes">
-                    <p><strong>{{ card['Notes'] }}</strong></p>
-                </div>                
+                    <p><strong>Notes:</strong> {{ card['Notes'] }}</p>
+                </div>                 
                 <div class="feedback-buttons">
                     <button class="btn btn-done">Done</button>
                     <button class="btn btn-redo">Redo</button>
                 </div>
-                </div>
+            </div>
         </div>
         {% endfor %}
     </div>
 
-    <script>
+<script>
     document.addEventListener('DOMContentLoaded', () => {
-        // Function to find the nearest ancestor with the class 'flashcard'
+        const CARD_LIMIT = 6;
+        const flashcards = Array.from(document.querySelectorAll('.flashcard'));
+        const totalCards = flashcards.length;
+        const viewFilter = document.getElementById('view-filter');
+        const btnReset = document.getElementById('btn-reset'); 
+        const showHintsCheckbox = document.getElementById('show-hints-checkbox'); 
+        
+        // NEW Search elements
+        const searchInput = document.getElementById('search-input');
+        const btnSearch = document.getElementById('btn-search');
+        
+        // Stat elements
+        const statTotal = document.getElementById('stat-total');
+        const statDone = document.getElementById('stat-done');
+        const statRedo = document.getElementById('stat-redo');
+
         const getFlashcard = (element) => element.closest('.flashcard');
 
-        // 1. Setup Card Flip (Toggle on click, but ignore button clicks)
+        function updateStats() {
+            const doneCount = flashcards.filter(card => card.classList.contains('done-mark')).length;
+            const redoCount = flashcards.filter(card => card.classList.contains('redo-mark')).length;
+            
+            statTotal.textContent = totalCards;
+            statDone.textContent = doneCount;
+            statRedo.textContent = redoCount;
+        }
+
+        // --- CORE DECK MANAGEMENT FUNCTION ---
+        function updateDeckView(filterMode = viewFilter.value, searchQuery = '') {
+            
+            // 1. Reset visibility for all cards
+            flashcards.forEach(card => {
+                card.classList.add('hidden');
+            });
+            
+            const normalizedQuery = searchQuery.trim().toLowerCase();
+            let cardsToProcess = flashcards;
+            
+            // 2. Apply Search Filter (Highest Priority)
+            if (normalizedQuery) {
+                // If searching, ignore standard view mode and show matching cards
+                cardsToProcess = flashcards.filter(card => {
+                    const meaning = card.getAttribute('data-meaning') || '';
+                    return meaning.includes(normalizedQuery);
+                });
+                
+                // Show all found cards in the search view
+                cardsToProcess.forEach(card => card.classList.remove('hidden'));
+                return; // Stop processing to keep all search results visible
+            }
+
+
+            // 3. Apply Standard View Filter (Only if not searching)
+            let cardsToDisplay = [];
+
+            if (filterMode === 'default') {
+                let redoCards = cardsToProcess.filter(card => card.classList.contains('redo-mark'));
+                let newCards = cardsToProcess.filter(card => 
+                    !card.classList.contains('redo-mark') && !card.classList.contains('done-mark')
+                );
+
+                if (newCards.length > 0) {
+                    cardsToDisplay = newCards;
+                } else if (redoCards.length > 0) {
+                    redoCards.forEach(card => card.classList.remove('done-mark')); 
+                    cardsToDisplay = cardsToProcess.filter(card => card.classList.contains('redo-mark'));
+                } else {
+                    return; 
+                }
+                
+                cardsToDisplay = cardsToDisplay.slice(0, CARD_LIMIT);
+
+            } else if (filterMode === 'all') {
+                cardsToDisplay = cardsToProcess;
+            } else if (filterMode === 'done') {
+                cardsToDisplay = cardsToProcess.filter(card => card.classList.contains('done-mark'));
+            } else if (filterMode === 'redo') {
+                cardsToDisplay = cardsToProcess.filter(card => card.classList.contains('redo-mark'));
+            }
+
+            // 4. Show the final set of cards
+            cardsToDisplay.forEach(card => card.classList.remove('hidden'));
+        }
+        
+        function resetDeck() {
+            flashcards.forEach(card => {
+                card.classList.remove('done-mark', 'redo-mark', 'flipped');
+            });
+            viewFilter.value = 'default';
+            searchInput.value = ''; // Clear search on reset
+            updateStats();
+            updateDeckView('default');
+        }
+
+
+        // --- EVENT HANDLERS ---
+
+        // Card Flip 
         document.querySelectorAll('.flashcard').forEach(card => {
             card.addEventListener('click', (e) => {
-                // Check if the click target is a button (or inside one)
                 if (!e.target.closest('.btn')) {
                     card.classList.toggle('flipped');
                 }
             });
         });
 
-        // 2. Setup Redo Button Logic
+        // Done/Redo Button Logic
         document.querySelectorAll('.btn-redo').forEach(button => {
             button.addEventListener('click', (e) => {
                 const flashcard = getFlashcard(e.target);
-                
-                // 🅰️ Action 1: Apply Redo color
                 flashcard.classList.add('redo-mark');
-                
-                // 🅱️ Action 2: Flip the card back to the front view
-                flashcard.classList.remove('flipped');
+                flashcard.classList.remove('done-mark'); 
+                flashcard.classList.remove('flipped'); 
+                updateStats();
+                updateDeckView(viewFilter.value, searchInput.value); // Pass current search/filter state
             });
         });
 
-        // 3. Setup Done Button Logic
         document.querySelectorAll('.btn-done').forEach(button => {
             button.addEventListener('click', (e) => {
                 const flashcard = getFlashcard(e.target);
-                
-                // 🅰️ Action 1: Remove Redo color (marks card as understood)
-                flashcard.classList.remove('redo-mark');
-                
-                // 🅱️ Action 2: Flip the card back to the front view
+                flashcard.classList.add('done-mark');
+                flashcard.classList.remove('redo-mark'); 
                 flashcard.classList.remove('flipped');
+                updateStats();
+                updateDeckView(viewFilter.value, searchInput.value); // Pass current search/filter state
             });
         });
+
+        // Filter Dropdown Change
+        viewFilter.addEventListener('change', (e) => {
+            updateDeckView(e.target.value, searchInput.value);
+        });
+
+        // Reset Button Handler
+        btnReset.addEventListener('click', resetDeck);
+        
+        // Show Hints Toggle Handler
+        showHintsCheckbox.addEventListener('change', (e) => {
+            if (e.target.checked) {
+                document.body.classList.add('show-hints');
+            } else {
+                document.body.classList.remove('show-hints');
+            }
+        });
+        
+        // NEW: Search Button Handler
+        btnSearch.addEventListener('click', () => {
+            // Clear view filter when searching
+            viewFilter.value = 'all'; 
+            updateDeckView(viewFilter.value, searchInput.value);
+        });
+
+        // Allow pressing Enter in the search box
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                // Clear view filter when searching
+                viewFilter.value = 'all'; 
+                updateDeckView(viewFilter.value, searchInput.value);
+            }
+        });
+
+        // --- INITIALIZATION ---
+        statTotal.textContent = totalCards;
+        updateStats();
+        flashcards.forEach(card => card.classList.add('hidden')); 
+        updateDeckView();
     });
 </script>
 </body>
