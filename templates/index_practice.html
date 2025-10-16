@@ -1,0 +1,30 @@
+<html>
+
+    <body>
+        <table>
+            <tr>
+                <td>
+                    <div class="container">
+                        {% for card in cards %}
+                        <div class="flashcard" data-meaning="{{ card['Meaning'] | lower }}">
+                            <div class="front">
+                                <div class="topic">
+                                    <p><strong>{{ card['Topic'] }}</strong></p>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </td>
+                <td>B</td>
+                <td>C</td>
+            </tr>
+            <tr>
+                <td>D</td>
+                <td>E</td>
+                <td>F</td>
+            </tr>
+        </table>
+    </body>
+
+</html>

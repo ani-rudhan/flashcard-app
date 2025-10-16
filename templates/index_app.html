@@ -15,6 +15,11 @@
         </div>
 
         <div id="filter-panel">
+            <label for="chapter-filter">Topic:</label>
+            <select id="chapter-filter">
+                <option value="all">All Topics</option>
+            </select>
+            
             <label for="view-filter">View Mode:</label>
             <select id="view-filter">
                 <option value="default">Study Deck (New/Redo Cycle)</option>
@@ -33,12 +38,13 @@
         <div id="search-panel">
             <input type="text" id="search-input" placeholder="Search by Meaning...">
             <button id="btn-search" class="btn btn-search">Search</button>
+            <button id="btn-clear" class="btn btn-clear">Clear</button>
         </div>
     </div>
 
     <div class="container">
         {% for card in cards %}
-        <div class="flashcard" data-meaning="{{ card['Meaning'] | lower }}">
+        <div class="flashcard" data-meaning="{{ card['Meaning'] | lower }}" data-topic="{{ card['Topic'] }}">
             <div class="front">
                 <div class="topic">
                     <p><strong>{{ card['Topic'] }}</strong></p>
@@ -49,6 +55,10 @@
                 <div class="word">
                     <p><strong>{{ card['Word'] }}</strong></p>
                 </div>
+                <div class="notes">
+                    <p><strong>Notes:</strong> {{ card['Notes'] }}</p>
+                </div>
+
             </div>
             <div class="back">
                 <div class="back-content-area">
@@ -56,14 +66,9 @@
                         <p>{{ card['Kanji'] }}</p>
                     </div>
                     <div class="meaning">
-                        <p>{{ card['Meaning'] }}</p>
+                        {{ card['Meaning'] }}
                     </div>
                 </div>
-                
-                <div class="notes">
-                    <p><strong>Notes:</strong> {{ card['Notes'] }}</p>
-                </div>                
-                
                 <div class="feedback-buttons">
                     <button class="btn btn-done">Done</button>
                     <button class="btn btn-redo">Redo</button>
@@ -76,17 +81,19 @@
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const CARD_LIMIT = 6;
-        let flashcards = Array.from(document.querySelectorAll('.flashcard')); // Use 'let' for reordering
+        let flashcards = Array.from(document.querySelectorAll('.flashcard'));
         const totalCards = flashcards.length;
         const viewFilter = document.getElementById('view-filter');
+        const chapterFilter = document.getElementById('chapter-filter');
         const btnReset = document.getElementById('btn-reset'); 
         const showHintsCheckbox = document.getElementById('show-hints-checkbox'); 
         
         // Search elements
         const searchInput = document.getElementById('search-input');
         const btnSearch = document.getElementById('btn-search');
+        const btnClear = document.getElementById('btn-clear');
         
-        // NEW Shuffle element
+        // Shuffle element
         const btnShuffle = document.getElementById('btn-shuffle');
         
         // Stat elements
@@ -119,32 +126,47 @@
             statRedo.textContent = redoCount;
         }
 
-        // --- CORE DECK MANAGEMENT FUNCTION ---
-        function updateDeckView(filterMode = viewFilter.value, searchQuery = '') {
+       function populateChapterFilter() {
+            const topics = new Set(flashcards.map(card => card.getAttribute('data-topic')).sort());
+            topics.forEach(topic => {
+                const option = document.createElement('option');
+                option.value = topic;
+                option.textContent = `Topic ${topic}`;
+                chapterFilter.appendChild(option);
+            });
+        }
+
+        function updateDeckView(filterMode = viewFilter.value, searchQuery = '', chapterQuery = chapterFilter.value) {
             
-            // 1. Reset visibility for all cards
             flashcards.forEach(card => {
                 card.classList.add('hidden');
             });
             
-            const normalizedQuery = searchQuery.trim().toLowerCase();
             let cardsToProcess = flashcards;
             
-            // 2. Apply Search Filter (Highest Priority)
+            // 2. Apply Chapter Filter (First priority for non-search views)
+            if (chapterQuery !== 'all') {
+                cardsToProcess = cardsToProcess.filter(card => 
+                    card.getAttribute('data-topic') === chapterQuery
+                );
+            }
+            
+            // 3. Apply Search Filter (Highest Priority if active)
+            const normalizedQuery = searchQuery.trim().toLowerCase();
             if (normalizedQuery) {
-                // If searching, ignore standard view mode and show matching cards
-                cardsToProcess = flashcards.filter(card => {
+                // If searching, show all matching cards regardless of status
+                let searchResults = cardsToProcess.filter(card => {
                     const meaning = card.getAttribute('data-meaning') || '';
                     return meaning.includes(normalizedQuery);
                 });
                 
-                // Show all found cards in the search view
-                cardsToProcess.forEach(card => card.classList.remove('hidden'));
-                return; // Stop processing to keep all search results visible
+                // Show all found cards 
+                searchResults.forEach(card => card.classList.remove('hidden'));
+                return; // Exit here if search is active
             }
 
 
-            // 3. Apply Standard View Filter (Only if not searching)
+            // 4. Apply Standard View Filter
             let cardsToDisplay = [];
 
             if (filterMode === 'default') {
@@ -154,7 +176,7 @@
                     !card.classList.contains('redo-mark') && !card.classList.contains('done-mark')
                 );
 
-                // Prioritize New cards, then Redo cards
+                // Prioritize New cards, then Redo cards, in shuffled order
                 let studyDeck = newCards.concat(redoCards);
                 
                 // Take only the limit for display
@@ -171,7 +193,7 @@
                 cardsToDisplay = cardsToProcess.filter(card => card.classList.contains('redo-mark'));
             }
 
-            // 4. Show the final set of cards
+            // 5. Show the final set of cards
             cardsToDisplay.forEach(card => card.classList.remove('hidden'));
         }
         
@@ -180,9 +202,9 @@
                 card.classList.remove('done-mark', 'redo-mark', 'flipped');
             });
             viewFilter.value = 'default';
-            searchInput.value = ''; // Clear search on reset
+            chapterFilter.value = 'all'; // Reset chapter on reset
+            searchInput.value = ''; 
             updateStats();
-            // Do not shuffle on reset, just update the view
             updateDeckView('default');
         }
 
@@ -199,6 +221,8 @@
         });
 
         // Done/Redo Button Logic
+        const updateView = () => updateDeckView(viewFilter.value, searchInput.value, chapterFilter.value);
+        
         document.querySelectorAll('.btn-redo').forEach(button => {
             button.addEventListener('click', (e) => {
                 const flashcard = getFlashcard(e.target);
@@ -206,7 +230,7 @@
                 flashcard.classList.remove('done-mark'); 
                 flashcard.classList.remove('flipped'); 
                 updateStats();
-                updateDeckView(viewFilter.value, searchInput.value); 
+                updateView();
             });
         });
 
@@ -217,13 +241,16 @@
                 flashcard.classList.remove('redo-mark'); 
                 flashcard.classList.remove('flipped');
                 updateStats();
-                updateDeckView(viewFilter.value, searchInput.value); 
+                updateView();
             });
         });
 
-        // Filter Dropdown Change
-        viewFilter.addEventListener('change', (e) => {
-            updateDeckView(e.target.value, searchInput.value);
+        // Filter Dropdown Change Handlers
+        viewFilter.addEventListener('change', updateView);
+        chapterFilter.addEventListener('change', () => {
+             // Reset view to default when chapter changes to show the new chapter's study deck
+            viewFilter.value = 'default';
+            updateView();
         });
 
         // Reset Button Handler
@@ -240,27 +267,30 @@
         
         // Search Button/Input Handlers
         const handleSearch = () => {
-             // Change view to 'all' to show all matches
-            viewFilter.value = 'all'; 
-            updateDeckView(viewFilter.value, searchInput.value);
+            viewFilter.value = 'all'; // Change view to 'all' to show all matches
+            updateView();
+        };
+        const clearSearch = () => {
+            searchInput.value = "";
+            updateView();
         };
         btnSearch.addEventListener('click', handleSearch);
+        btnClear.addEventListener('click',clearSearch);
         searchInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
                 handleSearch();
             }
         });
 
-        // NEW: Shuffle Button Handler
+        // Shuffle Button Handler
         btnShuffle.addEventListener('click', () => {
             shuffleArray(flashcards);
-            updateCardDOMOrder(); // Update the HTML order
-            // Keep the current view mode, but apply it to the newly shuffled deck
-            updateDeckView(viewFilter.value, searchInput.value);
-            console.log("Cards shuffled.");
+            updateCardDOMOrder(); 
+            updateView();
         });
 
         // --- INITIALIZATION ---
+        populateChapterFilter(); // CORRECTED: Now populates 1 to 25
         statTotal.textContent = totalCards;
         updateStats();
         // Initial shuffle for the first view

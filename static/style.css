@@ -70,6 +70,7 @@ body {
     padding: 8px 10px;
     border: 1px solid #ccc;
     border-radius: 5px;
+    width: 35.5%;
 }
 
 /* Base button styles for utility buttons */
@@ -87,6 +88,7 @@ body {
 .stat-redo { color: #E67B7B; }
 #filter-panel label { font-weight: 600; }
 #view-filter { padding: 6px 10px; border-radius: 5px; border: 1px solid #ccc; font-size: 0.9em; cursor: pointer; }
+#chapter-filter { padding: 6px 10px; border-radius: 5px; border: 1px solid #ccc; font-size: 0.9em; cursor: pointer; }
 
 /* Shuffle Button Style */
 .btn-shuffle {
@@ -123,7 +125,7 @@ body {
 .flashcard {
     width: 100%; 
     height: 0;
-    padding-bottom: 70%; 
+    padding-bottom: 60%; 
     position: relative;
     cursor: pointer;
     transition: background-color 0.4s ease-in-out;
@@ -180,8 +182,12 @@ body {
     font-size: 2em; 
     font-weight: 900;
     color: #2c3e50;
-    margin: auto 0; 
+    margin-bottom: auto; 
     text-align: center;
+}
+
+.notes {
+    margin-bottom: auto;
 }
 
 .flashcard .front .audio {
@@ -239,21 +245,17 @@ body {
 }
 
 /* Notes Styling */
-.flashcard .back .notes {
+.flashcard .front .notes {
     width: 100%;
     font-size: 0.9em; 
     color: #7f8c8d;
     text-align: center;
-    
-    max-height: 0; 
-    padding-top: 0;
-    padding-bottom: 0;
     overflow: hidden;
     opacity: 0;
     transition: max-height 0.3s ease-out, opacity 0.3s ease-out, padding 0.3s ease-out;
 }
 
-body.show-hints .flashcard .back .notes {
+body.show-hints .flashcard .front .notes {
     max-height: 100px; 
     opacity: 1;
     padding-top: 5px;
@@ -270,11 +272,9 @@ body.show-hints .flashcard .back .notes {
     display: flex;
     justify-content: space-between; 
     gap: 8px; 
-    padding-top: 10px; 
+    padding: 10px 5px; 
     border-top: 1px solid #ccc;
     box-sizing: border-box;
-    padding-left: 5px;
-    padding-right: 5px;
 }
 
 .btn {
@@ -287,6 +287,7 @@ body.show-hints .flashcard .back .notes {
     flex-grow: 1; 
     font-size: 0.9em;
     min-width: 0; 
+    height: 40px; 
 }
 
 .btn:active {
