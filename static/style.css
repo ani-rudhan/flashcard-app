@@ -140,7 +140,7 @@ body {
     padding: 15px; 
     box-sizing: border-box;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    transition: transform 0.8s ease-in-out;
+    transition: transform 0.3s ease-in-out;
 }
 
 .flashcard .back { transform: rotateY(180deg); }
