@@ -1,0 +1,43 @@
+Topic,Audio,Word,Kanji,Meaning,Notes
+10,-,まいにちのこと,毎日のこと,Daily activities,N
+10,-,ばしょ,場所,Places,N
+10,91,いえ,家,house,N
+10,91,へや,,room,N
+10,91,としょかん,,library,N
+10,91,しょくどう,,cafeteria,N
+10,91,コンビニ,,convenience store,N
+10,91,スーパーマーケット,,supermarket,N
+10,91,（お）みせ,（お）店,"shop, store, restaurant",N
+10,91,にくや,肉屋,butcher shop,N
+10,91,さかなや,魚屋,fish shop,N
+10,91,やおや,,greengrocer,N
+10,91,ヅルッグストア,,drugstore,N
+10,92,いつも,,"always, usually",Adverb
+10,92,べんきょう,,study,"N, V3-T, suru"
+10,93,テレビ,,TV,N
+10,93,みる,見る,"to see, watch","V2-T, ichidan"
+10,93,よく,,often,Adverb
+10,94,はん,半,book,N
+10,94,よむ,読む,to read,"V1-T, godan"
+10,94,あまり,,"(not) much, (not) many",Adverb
+10,95,りょうり,,"to cook, cooking","N, V3-T, suru"
+10,95,ぜんぜん,,(not) at all,Adverb
+10,96,おんがく,,music,N
+10,96,きく,聞く,to listen,"V1-T, godan"
+10,97,かう,買う,buy,"V1-T, godan"
+10,98,そうじ,,"to clean, cleaning","N, V3-T, suru"
+10,98,それから,,"next, then",Conjunction
+10,98,せんたく,,"laundry, to wash (cloth)","N, V3-T, suru"
+10,99,（お）ふろ,,bath,N
+10,99,はいる,入る,to take (a bath),"V1-I, ichidan"
+10,99,ショワー,,shower,N
+10,99,あびる,,to take (a shower),"V2-T, ichidan"
+10,100,かいもの,買い物,"to shop, shopping","N, V3-I, suru"
+10,100,レポート,,report,N
+10,100,かく,書く,to write,"V1-T, godan"
+10,101,ニュース,,news,N
+10,101,（インター）ネット,,internet,N
+10,102,でんわ,電話,to phone call,"N, V3-I, suru"
+10,103,（お）べんとう,,bento box,N
+10,103,つくる,作る,to make,"V1-T, godan"
+10,103,あらう,,to wash,"V1-T, godan"
