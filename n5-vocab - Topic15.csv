@@ -1,0 +1,71 @@
+Topic,Audio,Word,Kanji,Meaning,Notes
+15,-,ねんがつぴ,年月日,Dates,N
+15,-,きせつ,季節,Seasons,N
+15,167,いちがつ,１月,first month,N
+15,167,にがつ,２月,second month,N
+15,167,さんがつ,３月,third month,N
+15,167,しがつ,４月,fourth month,N
+15,167,ごがつ,５月,fifth month,N
+15,167,ろくがつ,６月,sixth month,N
+15,167,しちがつ,７月,seventh month,N
+15,167,はちがつ,８月,eigth month,N
+15,167,くがつ,９月,nineth month,N
+15,167,じゅうがつ,10月,tenth month,N
+15,167,じゅういちがつ,11月,eleventh month,N
+15,167,じゅうにがつ,12月,twelfth month,N
+15,167,なんがつ,何月,what month?,N
+15,168,いちたい,1日,First day,N
+15,168,ふつか,2日,Second day,N
+15,168,みっか,3日,Third day,N
+15,168,よっか,4日,Fourth day,N
+15,168,いっか,5日,Fifth day,N
+15,168,むいか,6日,Sixth day,N
+15,168,なのか,7日,Seventh day,N
+15,168,ようか,8日,Eighth day,N
+15,168,ここのか,9日,Ninth day,N
+15,168,とおか,10日,Tenth day,N
+15,168,じゅういちにち,11日,Eleventh day,N
+15,168,じゅうににち,12日,Twelfth day,N
+15,168,じゅうさんにち,13日,Thirteenth day,N
+15,168,じゅうよっか,14日,Fourteenth day,N
+15,168,じゅうごにち,15日,Fifteenth day,N
+15,168,じゅうろくにち,16日,Sixteenth day,N
+15,168,じゅうしちにち,17日,Seventeenth day,N
+15,168,じゅうはちにち,18日,Eighteenth day,N
+15,168,じゅうくにち,19日,Nineteenth day,N
+15,168,はつか,20日,Twentieth day,N
+15,168,にじゅういちにち,21日,Twenty-first day,N
+15,168,にじゅうににち,22日,Twenty-second day,N
+15,168,にじゅうさんにち,23日,Twenty-third day,N
+15,168,にじゅうよっか,24日,Twenty-fourth day,N
+15,168,にじゅうごにち,25日,Twenty-fifth day,N
+15,168,にじゅうろくにち,26日,Twenty-sixth day,N
+15,168,にじゅうしちにち,27日,Twenty-seventh day,N
+15,168,にじゅうはちにち,28日,Twenty-eighth day,N
+15,168,にじゅうくにち,29日,Twenty-ninth day,N
+15,168,さんじゅうにち,30日,Thirtieth day,N
+15,168,さんじゅういちにち,31日,Thirty-first day,N
+15,168,なんにち,何日,What day?,N
+15,169,せん｜きゅうひゃく｜きゅうじゅう｜ごねん,1995年,1995年,N
+15,169,にせん｜いちねん,2001年,2001年,N
+15,169,にせん｜にじゅうよねん,2024年,2024年,N
+15,170,はる,,spring,N
+15,170,なつ,,summer,N
+15,170,あき,,autumn,N
+15,170,ふゆ,,winter,N
+15,171,あつい,熱い,hot,N
+15,171,さむい,寒い,cold,N
+15,171,あたたかい,,warm,N
+15,171,すずしい,,cool,N
+15,172,たんじょうび,,birthday,N
+15,174,ひ,日,day,N
+15,175,バレンタインデー,,valentine's day,N
+15,177,ほっかいどう,,hokkaido,N
+15,178,オーストラリア,,Australia,N
+15,178,クリスマス,,Christmas,N
+15,179,なる,,to become,V1-I
+15,180,もうすぐ,,Almost,Adverb
+15,180,だんだん,,gradually,Adverb
+15,182,なつやすみ,夏休み,summer break,N
+15,182,～しゅうかん,～週間,~Weeks,Suffix
+15,183,ふゆやすみ,冬休み,winter break,N
